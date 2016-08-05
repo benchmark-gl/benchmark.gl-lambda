@@ -10,6 +10,7 @@
   "dependencies": {
     "adm-zip": "^0.4.7",
     "aws-sdk": "2.3.16",
+    "commit-to-github": "^0.2.1",
     "dynamodb-data-types": "^3.0.0",
     "github": "^2.4.0",
     "lodash.groupby": "^4.5.1",
