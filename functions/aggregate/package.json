@@ -1,0 +1,19 @@
+{
+  "name": "aggregate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.4.7",
+    "aws-sdk": "2.3.16",
+    "dynamodb-data-types": "^3.0.0",
+    "github": "^2.4.0",
+    "lodash.groupby": "^4.5.1",
+    "node-dir": "^0.1.15",
+    "request": "^2.74.0"
+  }
+}
