@@ -9,22 +9,17 @@ exports.handle = function(event, context) {
 	console.log(JSON.stringify(event, null, "  "));
 
 	var datetime = new Date().getTime().toString();
-	var results = event.results || {
-		fakeMeasure: Math.random() * 1000,
-		fraudMeasure: Math.random() * 1000,
-		pretendMeasure: Math.random() * 1000
-	};
-	var system = event.system || {
-		unmaskedRenderer : "unknown",
-		os : "socialtablesOS",
-		browser : "socialtablesBrowser",
-		device : "socialtablesLappy"
-	};
+
+	var gpu = event.gpu || {};
+	var benchmarks = event.benchmarks || {};
+	var platform = event.platform || {};
+	
 	var item = {
 		"id": uuid.v4(),
 		"datetime": datetime,
-		"system": system,
-		"results": results
+		"gpu": gpu,
+		"benchmarks": benchmarks,
+		"platform": platform
 	};
 	dynamodb.putItem({
 		"TableName": tableName,
