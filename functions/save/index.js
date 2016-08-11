@@ -6,13 +6,19 @@ var attr = require("dynamodb-data-types").AttributeValue;
 var tableName = "gl-benchmark-results";
 
 exports.handle = function(event, context) {
-	console.log(JSON.stringify(event, null, "  "));
-
 	var datetime = new Date().getTime().toString();
 
 	var gpu = event.gpu || {};
-	var benchmarks = event.benchmarks || {};
+	var benchmarks = event.benchmarks || [];
 	var platform = event.platform || {};
+
+	//non unique arrays to maps to prevent attr marking them as unique sets
+    gpu.aliasedLineWidthRange = Object.assign({}, gpu.aliasedLineWidthRange);
+    gpu.aliasedPointSizeRange = Object.assign({}, gpu.aliasedPointSizeRange);
+    gpu.maxViewportDimensions = Object.assign({}, gpu.maxViewportDimensions);
+    benchmarks.forEach(item => {
+        item.stats.sample = Object.assign({}, item.stats.sample)
+	});
 	
 	var item = {
 		"id": uuid.v4(),
