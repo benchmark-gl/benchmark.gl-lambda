@@ -11,6 +11,7 @@ exports.handle = function(event, context) {
 	var gpu = event.gpu || {};
 	var benchmarks = event.benchmarks || [];
 	var platform = event.platform || {};
+	var mechTurkId = event.mechTurkId || {};
 
 	//non unique arrays to maps to prevent attr marking them as unique sets
     gpu.aliasedLineWidthRange = Object.assign({}, gpu.aliasedLineWidthRange);
@@ -25,7 +26,8 @@ exports.handle = function(event, context) {
 		"datetime": datetime,
 		"gpu": gpu,
 		"benchmarks": benchmarks,
-		"platform": platform
+		"platform": platform,
+		"mechanical-turk-id": mechTurkId
 	};
 	dynamodb.putItem({
 		"TableName": tableName,
