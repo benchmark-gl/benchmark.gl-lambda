@@ -20,6 +20,13 @@ var dynamoDB = new AWS.DynamoDB();
 
 var directory = "/tmp";
 
+var formatObject = function(key, value){
+  if (key=="mechanical-turk-id") {
+      return undefined;
+  }
+  else return value;
+}
+
 
 var scanDynamoDB = function(query) {
 	return new Promise((resolve, reject) => {
@@ -35,9 +42,15 @@ var scanDynamoDB = function(query) {
 			res.Items.forEach(item => {
 				json.push(attr.unwrap(item));
 			});
-			var updatedJson = JSON.stringify(json);
-			fs.writeFileSync(directory + "/dump.json", updatedJson);
+			var updatedJson = JSON.stringify(json, (key, value) => {
+					if (key === "mechanical-turk-id") {
+						return undefined;
+					} else {
+						return value;
+					}
+				});
 
+			fs.writeFileSync(directory + "/dump.json", updatedJson);
 			if (res.LastEvaluatedKey) { // Result is incomplete; there is more to come.
 				query.ExclusiveStartKey = res.LastEvaluatedKey;
 				return resolve(scanDynamoDB(query));
@@ -52,9 +65,37 @@ var buildGpuProfileDefinitions = function(benchmarkResults) {
 	return new Promise((resolve, reject) => {
 		console.log("Building GPU Profiles...");
 
-		var sortedJson = groupBy(benchmarkResults, "system.unmaskedRenderer");
+		var aggregates = {}
+		var benchmarkNames = [];
+		benchmarkResults.forEach(result => {
+			result.benchmarks.forEach(benchmark => {
+				if (aggregates[benchmark.name] === undefined){
+					benchmarkNames.push(benchmark.name);
+					aggregates[benchmark.name] = [];
+				}
+				aggregates[benchmark.name].push({
+					id: result.id,
+					gpu: result.gpu.unMaskedRenderer,
+					platform: result.platform,
+					datetime: result.datetime,
+					result: benchmark.hz
+				});
+			});
+		});
 
-		fs.writeFile(directory + "/dist.json", JSON.stringify(sortedJson), (err) => {
+		benchmarkNames.forEach(name => {
+			aggregates[name].sort();
+		});
+
+		var outputString = JSON.stringify(aggregates, (key, value) => {
+				if (key === "mechanical-turk-id") {
+					return undefined;
+				} else {
+					return value;
+				}
+			});
+
+		fs.writeFile(directory + "/dist.json", outputString, (err) => {
 			if(err){
 				console.error("outputFiles", JSON.stringify(err, null, "  "));
 				return reject(err);
